@@ -20,6 +20,11 @@ function createMenu() {
 }
 // cresateMenu();
 
+app.get('/api/beans/', async (req, res) => {
+    const menu = await coffeeDB.find({});
+    res.json(menu);
+});
+
 app.listen(PORT, () => {
     console.log('Listening on port', PORT)
 });
