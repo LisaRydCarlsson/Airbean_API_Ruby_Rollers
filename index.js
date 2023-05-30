@@ -6,7 +6,7 @@ const PORT = 1337;
 
 // Ska alla ligga i egen mapp?
 const nedb = require('nedb-promise');
-const { userInfo } = require('os');
+const { checkUser } = require('./utils');
 // Databas för kaffemenyn
 const coffeeDB = new nedb({ filename: 'coffeMenu.db', autoload: true });
 // Databas för users och ordrar kopplade till user. Om inte inloggad - lägg order under guest?
@@ -41,7 +41,7 @@ app.post('/api/beans/order', (req, res) => {
 });
 
 // Skapa konto
-app.post('/api/user/signup', async (req, res) => {
+app.post('/api/user/signup', checkUser, async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
     let responseObj = {
@@ -65,7 +65,7 @@ app.post('/api/user/signup', async (req, res) => {
 });
 
 // Logga in
-app.post('/api/user/login', async (req, res) => {
+app.post('/api/user/login', checkUser, async (req, res) => {
     const currentUser = req.body;
     let responseObj = {
         success: true,
