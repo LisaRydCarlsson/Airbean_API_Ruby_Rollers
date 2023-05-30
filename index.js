@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { checkUser, checkDelivery } = require('./utils');
+const { checkUser, checkDelivery, plannedDelivery, isDelivered } = require('./utils');
 
 const express = require('express');
 const app = express();
@@ -29,13 +29,21 @@ app.get('/api/beans', async (req, res) => {
 
 // Skapa middleware som kollar om användaren är inloggad?
 app.post('/api/beans/order', (req, res) => {
-    const order = req.body.order;
     const username = req.body.username;
+    // const order = req.body.order;
     const date = new Date().toLocaleString();
+    // const delivery = plannedDelivery();
+    const newOrder = {
+        order: req.body.order,
+        date: date,
+        delivery: plannedDelivery(),
+        orderNumber: username + date
+    }
 
-    usersDB.update({ username: username }, { $push: { orders: { order: order, date: date, orderNumber: username+date}  } });
+    // usersDB.update({ username: username }, { $push: { orders: { order: order, date: date, orderNumber: username+date}  } });
+    usersDB.update({ username: username }, { $push: { orders: newOrder } });
 
-    res.json(order);
+    res.json(newOrder);
 });
 
 // Skapa konto
@@ -107,7 +115,8 @@ app.get('/api/beans/order/status', async (req, res) => {
         user.orders.forEach(order => {
             if (order.orderNumber === orderNumber) {
                 status.message = 'Ordernumber exists.'
-                status.delivered = checkDelivery(order);
+                // status.delivered = checkDelivery(order);
+                status.delivered = isDelivered(order);
             } else {
                 status.message = 'The ordernumber does not exists.';
             }
