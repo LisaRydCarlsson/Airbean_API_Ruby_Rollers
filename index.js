@@ -34,10 +34,10 @@ app.post('/api/beans/order', (req, res) => {
     const date = new Date().toLocaleString();
     // const delivery = plannedDelivery();
     const newOrder = {
-        order: req.body.order,
+        orderNumber: username + date,
         date: date,
         delivery: plannedDelivery(),
-        orderNumber: username + date
+        order: req.body.order
     }
 
     // usersDB.update({ username: username }, { $push: { orders: { order: order, date: date, orderNumber: username+date}  } });
