@@ -1,0 +1,13 @@
+{
+    "items": [
+        {
+            "username": "username",
+            "password": "password123",
+            "orders": []
+        },
+        {
+            "username": "guest",
+            "orders": []
+        }
+    ]
+}

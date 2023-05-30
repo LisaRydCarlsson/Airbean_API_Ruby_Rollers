@@ -14,27 +14,30 @@ const usersDB = new nedb({ filename: 'users.db', autoload: true });
 
 app.use(express.json());
 
-function createMenu() {
-    const coffees = JSON.parse(fs.readFileSync('menu.json'));
+function createDB(filename, database) {
+    const file = JSON.parse(fs.readFileSync(filename));
 
-    coffees.menu.forEach(product => {
-        coffeeDB.insert({ product });
+    file.items.forEach(item => {
+        database.insert(item);
     });
 }
-// createMenu();
+// createDB('users.json', usersDB);
+// createDB('menu.json', coffeeDB);
 
 app.get('/api/beans', async (req, res) => {
     const menu = await coffeeDB.find({});
     res.json(menu);
 });
 
-// Skapa middleware här
+// Skapa middleware här som kollar om inloggad eller ej
 app.post('/api/beans/order', (req, res) => {
-    const order = req.body;
+    const order = req.body.order;
+    const username = req.body.username;
 
-    usersDB.insert(order);
+    // Skriver en ny, vi vill att den ska uppdatera?
+    usersDB.update({ username: username }, { $push: { orders: order } });
 
-    res.json(order)
+    res.json(order);
 });
 
 app.listen(PORT, () => {
