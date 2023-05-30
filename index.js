@@ -27,12 +27,12 @@ app.get('/api/beans', async (req, res) => {
     res.json(menu);
 });
 
+// Skapa middleware som kollar om användaren är inloggad?
 app.post('/api/beans/order', (req, res) => {
     const order = req.body.order;
     const username = req.body.username;
     const date = new Date().toLocaleString();
 
-    // Skriver en ny, vi vill att den ska uppdatera?
     usersDB.update({ username: username }, { $push: { orders: { order: order, date: date } } });
 
     res.json(order);
