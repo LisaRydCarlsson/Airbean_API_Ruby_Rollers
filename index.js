@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { checkUser, checkDelivery } = require('./utils');
 
 const express = require('express');
 const app = express();
@@ -6,8 +7,7 @@ const PORT = 1337;
 
 // Ska alla ligga i egen mapp?
 const nedb = require('nedb-promise');
-const { checkUser, checkDelivery } = require('./utils');
-const coffeeDB = new nedb({ filename: 'coffeMenu.db', autoload: true });
+const menuDB = new nedb({ filename: 'menu.db', autoload: true });
 const usersDB = new nedb({ filename: 'users.db', autoload: true });
 
 app.use(express.json());
@@ -20,20 +20,18 @@ function createDB(filename, database) {
     });
 }
 // createDB('users.json', usersDB);
-// createDB('menu.json', coffeeDB);
+// createDB('menu.json', menuDB);
 
 app.get('/api/beans', async (req, res) => {
-    const menu = await coffeeDB.find({});
+    const menu = await menuDB.find({});
     res.json(menu);
 });
 
 // Skapa middleware som kollar om användaren är inloggad?
-
 app.post('/api/beans/order', (req, res) => {
     const order = req.body.order;
     const username = req.body.username;
     const date = new Date().toLocaleString();
-    
 
     usersDB.update({ username: username }, { $push: { orders: { order: order, date: date, orderNumber: username+date}  } });
 
@@ -86,6 +84,7 @@ app.post('/api/user/login', checkUser, async (req, res) => {
     res.json(responseObj);
 });
 
+// Hämta orderhistorik
 app.get('/api/user/history', async (req, res) => {
     const username = req.body.username;
     const [ user ] = await usersDB.find({ username: username });
@@ -95,8 +94,9 @@ app.get('/api/user/history', async (req, res) => {
     }
 
     res.json(responseObj);
-})
+});
 
+// Hämta status för order
 app.get('/api/beans/order/status', async (req, res) => {
     const username = req.body.username;
     const orderNumber = req.body.orderNumber;
