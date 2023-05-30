@@ -7,9 +7,7 @@ const PORT = 1337;
 // Ska alla ligga i egen mapp?
 const nedb = require('nedb-promise');
 const { checkUser } = require('./utils');
-// Databas för kaffemenyn
 const coffeeDB = new nedb({ filename: 'coffeMenu.db', autoload: true });
-// Databas för users och ordrar kopplade till user. Om inte inloggad - lägg order under guest?
 const usersDB = new nedb({ filename: 'users.db', autoload: true });
 
 app.use(express.json());
@@ -29,13 +27,13 @@ app.get('/api/beans', async (req, res) => {
     res.json(menu);
 });
 
-// Skapa middleware här som kollar om inloggad eller ej
 app.post('/api/beans/order', (req, res) => {
     const order = req.body.order;
     const username = req.body.username;
+    const date = new Date().toLocaleString();
 
     // Skriver en ny, vi vill att den ska uppdatera?
-    usersDB.update({ username: username }, { $push: { orders: order } });
+    usersDB.update({ username: username }, { $push: { orders: { order: order, date: date } } });
 
     res.json(order);
 });

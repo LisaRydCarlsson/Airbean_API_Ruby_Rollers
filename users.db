@@ -2,3 +2,4 @@
 {"username":"samuel","password":"password","orders":[],"_id":"Q7uMa2oeFoHvsBX3"}
 {"username":"guest","orders":[],"_id":"Qdb9Z0UYWF0VEkcc"}
 {"username":"cissi","password":"password","orders":[],"_id":"uEbi6rfeu1t7KmFX"}
+{"username":"username","password":"password123","orders":[{"order":[{"id":"coffee-m2h37k2mnh"},{"id":"coffee-m2h37k2mnh"}],"date":"2023-05-30 11:22:44"}],"_id":"8EPMhJTLdHyFpnrW"}
