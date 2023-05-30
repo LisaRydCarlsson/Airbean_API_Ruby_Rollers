@@ -8,6 +8,21 @@ function checkUser(req, res, next) {
     }
 }
 
+// Kollar om det gått 20 min
+function checkDelivery(order) {
+    const timestamp = order.date;
+
+    const milliseconds = Date.now() - Date.parse(timestamp);
+    const minutes = Math.floor(parseInt(milliseconds) / 60000);
+
+    if (minutes < 20) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
 module.exports = {
-    checkUser
+    checkUser,
+    checkDelivery
 }

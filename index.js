@@ -6,7 +6,7 @@ const PORT = 1337;
 
 // Ska alla ligga i egen mapp?
 const nedb = require('nedb-promise');
-const { checkUser } = require('./utils');
+const { checkUser, checkDelivery } = require('./utils');
 const coffeeDB = new nedb({ filename: 'coffeMenu.db', autoload: true });
 const usersDB = new nedb({ filename: 'users.db', autoload: true });
 
@@ -35,7 +35,7 @@ app.post('/api/beans/order', (req, res) => {
     const date = new Date().toLocaleString();
     
 
-    usersDB.update({ username: username }, { $push: { orders: { order: order, date: date, orderID: username+date}  } });
+    usersDB.update({ username: username }, { $push: { orders: { order: order, date: date, orderNumber: username+date}  } });
 
     res.json(order);
 });
@@ -97,13 +97,26 @@ app.get('/api/user/history', async (req, res) => {
     res.json(responseObj);
 })
 
-app.listen(PORT, () => {
-    console.log('Listening on port', PORT);
+app.get('/api/beans/order/status', async (req, res) => {
+    const username = req.body.username;
+    const orderNumber = req.body.orderNumber;
+    const [ user ] = await usersDB.find({ username: username });
+    let status = {};
+
+    if (user.orders.length > 0) {
+        user.orders.forEach(order => {
+            if (order.orderNumber === orderNumber) {
+                status.message = 'Ordernumber exists.'
+                status.delivered = checkDelivery(order);
+            } else {
+                status.message = 'The ordernumber does not exists.';
+            }
+        })
+    }
+    
+    res.json(status);
 });
 
-app.get('/api/beans/order/status', async (req, res) => {
-    const orderNumber = req.body.orderNumber;
-    const [ order ] = await usersDB.find ({ orders.order.orderID: orderNumber });
-
-    res.json(order);
+app.listen(PORT, () => {
+    console.log('Listening on port', PORT);
 });
