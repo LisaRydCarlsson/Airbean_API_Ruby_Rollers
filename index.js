@@ -82,6 +82,17 @@ app.post('/api/user/login', checkUser, async (req, res) => {
     }
 
     res.json(responseObj);
+});
+
+app.get('/api/user/history', async (req, res) => {
+    const username = req.body.username;
+    const [ user ] = await usersDB.find({ username: username });
+    const responseObj = {
+        message: 'Previous orders',
+        orders: user.orders
+    }
+
+    res.json(responseObj);
 })
 
 app.listen(PORT, () => {
