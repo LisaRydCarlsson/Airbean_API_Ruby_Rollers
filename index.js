@@ -61,7 +61,7 @@ app.post('/api/signup', async (req, res) => {
         usersDB.insert({ username: username, password: password, orders: [] });
     }
 
-    res.status(201).json(responseObj);
+    res.json(responseObj);
 });
 
 app.listen(PORT, () => {
