@@ -28,12 +28,14 @@ app.get('/api/beans', async (req, res) => {
 });
 
 // Skapa middleware som kollar om användaren är inloggad?
+
 app.post('/api/beans/order', (req, res) => {
     const order = req.body.order;
     const username = req.body.username;
     const date = new Date().toLocaleString();
+    
 
-    usersDB.update({ username: username }, { $push: { orders: { order: order, date: date } } });
+    usersDB.update({ username: username }, { $push: { orders: { order: order, date: date, orderID: username+date}  } });
 
     res.json(order);
 });
@@ -97,4 +99,11 @@ app.get('/api/user/history', async (req, res) => {
 
 app.listen(PORT, () => {
     console.log('Listening on port', PORT);
+});
+
+app.get('/api/beans/order/status', async (req, res) => {
+    const orderNumber = req.body.orderNumber;
+    const [ order ] = await usersDB.find ({ orders.order.orderID: orderNumber });
+
+    res.json(order);
 });
