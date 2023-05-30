@@ -40,6 +40,30 @@ app.post('/api/beans/order', (req, res) => {
     res.json(order);
 });
 
+// Skapa konto
+app.post('/api/signup', async (req, res) => {
+    const username = req.body.username;
+    const password = req.body.password;
+    let responseObj = {
+        success: true,
+        message: 'Signup ok.'
+    }
+
+    const users = await usersDB.find({});
+    users.forEach(user => {
+        if (user.username === username) {
+            responseObj.success = false;
+            responseObj.message = 'User already exists.'
+        }
+    });
+
+    if (responseObj.success) {
+        usersDB.insert({ username: username, password: password, orders: [] });
+    }
+
+    res.status(201).json(responseObj);
+});
+
 app.listen(PORT, () => {
     console.log('Listening on port', PORT);
 });
