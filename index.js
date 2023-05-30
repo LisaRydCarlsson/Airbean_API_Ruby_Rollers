@@ -41,7 +41,7 @@ app.post('/api/beans/order', (req, res) => {
 });
 
 // Skapa konto
-app.post('/api/signup', async (req, res) => {
+app.post('/api/user/signup', async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
     let responseObj = {
@@ -63,6 +63,28 @@ app.post('/api/signup', async (req, res) => {
 
     res.json(responseObj);
 });
+
+// Logga in
+app.post('/api/user/login', async (req, res) => {
+    const currentUser = req.body;
+    let responseObj = {
+        success: true,
+        message: 'Login ok.'
+    }
+
+    const [ user ] = await usersDB.find({ username: currentUser.username });
+    if (user) {
+        if (currentUser.password !== user.password) {
+            responseObj.success = false;
+            responseObj.message = 'Wrong password.'
+        }
+    } else {
+        responseObj.success = false;
+        responseObj.message = 'Wrong username.'
+    }
+
+    res.json(responseObj);
+})
 
 app.listen(PORT, () => {
     console.log('Listening on port', PORT);
