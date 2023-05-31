@@ -18,6 +18,12 @@ function checkOrderData(req, res, next) {
     }
 }
 
+
+function middleware(req, res, next) {
+    res.locals.totalPrice = "Hej världen!";
+    next();
+}
+
 // Kollar hur lång tid det är kvar
 function checkDelivery(order) {
     const timestamp = order.delivery;
@@ -49,5 +55,6 @@ module.exports = {
     checkOrderData,
     checkDelivery,
     plannedDelivery,
-    isDelivered
+    isDelivered,
+    middleware
 }

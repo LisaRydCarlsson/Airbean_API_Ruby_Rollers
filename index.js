@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
-const { checkUser, checkDelivery, plannedDelivery, isDelivered, checkOrderData } = require('./utils');
+const { checkUser, checkDelivery, plannedDelivery, isDelivered, checkOrderData, middleware } = require('./utils');
 
 const express = require('express');
 const app = express();
@@ -30,7 +30,7 @@ app.get('/api/beans', async (req, res) => {
 
 // Skapa middleware som kollar om användaren är inloggad?
 // Borde vi använda användar id istället för username?
-app.post('/api/beans/order', (req, res) => {
+app.post('/api/beans/order', middleware, (req, res) => {
     const userID = req.body.userID;
     const date = new Date().toLocaleString();
     const newOrder = {
@@ -38,7 +38,7 @@ app.post('/api/beans/order', (req, res) => {
         timeOfOrder: date,
         delivery: plannedDelivery(),
         order: req.body.order,
-        totalPrice: req.body.totalPrice
+        totalPrice: res.locals.totalPrice
     }
 
     // Om gäst så kanske man bara ska ersätta ordern? Ska den tas bort sen?
