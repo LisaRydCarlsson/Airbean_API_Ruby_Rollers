@@ -1,3 +1,5 @@
+const { findMenuItem } = require('./menu')
+
 function createDB(filename, database) {
     const file = JSON.parse(fs.readFileSync(filename));
 
@@ -16,8 +18,26 @@ function checkProperty(property) {
     }
 }
 
-function middleware(req, res, next) {
-    res.locals.totalPrice = "Hej världen!";
+async function orderValidation(req, res, next) {
+    let orderItems = req.body.order;
+    let totalPrice = 0;
+
+    // Hämta alla items i db
+    orderItems = await Promise.all(orderItems.map(async item => {
+        return await findMenuItem(item.id);
+    }));        
+
+    // Summera pris om item finns, annars returnera felmeddelande
+    orderItems.forEach(item => {
+        if (item && item.price) {
+            totalPrice = totalPrice + item.price;
+        } else {
+            res.status(400).json({ success: false, error: 'One or more order item does not exist.' });
+        }
+    });
+
+    console.log(orderItems);
+    res.locals.totalPrice = totalPrice;
     next();
 }
 
@@ -53,5 +73,5 @@ module.exports = {
     checkDelivery,
     plannedDelivery,
     isDelivered,
-    middleware
+    orderValidation
 }

@@ -10,6 +10,11 @@ async function getMenu() {
     return menu;
 }
 
+async function findMenuItem(id) {
+    return await menuDB.findOne({ id: id });
+}
+
 module.exports = {
-    getMenu
+    getMenu,
+    findMenuItem
 }

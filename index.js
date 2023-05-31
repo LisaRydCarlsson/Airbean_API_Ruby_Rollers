@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
-const { checkDelivery, plannedDelivery, isDelivered, middleware, checkProperty } = require('./utils');
+const { checkDelivery, plannedDelivery, isDelivered, orderValidation, checkProperty } = require('./utils');
 
 const express = require('express');
 const { getMenu } = require('./menu');
@@ -18,8 +18,8 @@ app.get('/api/beans', async (req, res) => {
     }
 });
 
-// Borde vi använda användar id istället för username?
-app.post('/api/beans/order', checkProperty('userID'), checkProperty('order'), middleware, (req, res) => {
+// Skicka order
+app.post('/api/beans/order', checkProperty('userID'), checkProperty('order'), orderValidation, (req, res) => {
     const userID = req.body.userID;
     const date = new Date().toLocaleString();
     const newOrder = {
@@ -88,7 +88,7 @@ app.post('/api/user/login', checkProperty('username'), checkProperty('password')
     res.json(responseObj);
 });
 
-// Hämta orderhistorik, här behövs en middleware som kollar userID
+// Hämta orderhistorik, här behövs en orderValidation som kollar userID
 app.get('/api/user/history', checkProperty('userID'), async (req, res) => {
     const userID = req.body.userID;
     const [ user ] = await findUsers('_id', userID);
