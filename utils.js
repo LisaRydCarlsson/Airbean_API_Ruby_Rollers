@@ -8,18 +8,24 @@ function checkUser(req, res, next) {
     }
 }
 
-// Kollar om det gått 20 min
-function checkDelivery(order) {
-    const timestamp = order.date;
+function checkOrderStatus(req, res, next) {
+    const order = req.body;
 
-    const milliseconds = Date.now() - Date.parse(timestamp);
+    if (order.hasOwnProperty('username') && order.hasOwnProperty('orderNumber')) {
+        next();
+    } else {
+        res.status(400).json({ success: false, error: 'Wrong data properties.' });
+    }
+}
+
+// Kollar hur lång tid det är kvar
+function checkDelivery(order) {
+    const timestamp = order.delivery;
+
+    const milliseconds = Date.parse(timestamp) - Date.now();
     const minutes = Math.floor(milliseconds / 60000);
 
-    if (minutes < 20) {
-        return false;
-    } else {
-        return true;
-    }
+    return minutes;
 }
 
 // Kollar diff mellan leveranstid och nu
@@ -40,6 +46,7 @@ function plannedDelivery() {
 
 module.exports = {
     checkUser,
+    checkOrderStatus,
     checkDelivery,
     plannedDelivery,
     isDelivered

@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { checkUser, checkDelivery, plannedDelivery, isDelivered } = require('./utils');
+const { checkUser, checkDelivery, plannedDelivery, isDelivered, checkOrderStatus } = require('./utils');
 
 const express = require('express');
 const app = express();
@@ -104,23 +104,31 @@ app.get('/api/user/history', async (req, res) => {
     res.json(responseObj);
 });
 
-// Hämta status för order
-app.get('/api/beans/order/status', async (req, res) => {
+// Hämta status för order, skapa middleware som kollar om rätt data skickats in?
+app.get('/api/beans/order/status', checkOrderStatus, async (req, res) => {
     const username = req.body.username;
     const orderNumber = req.body.orderNumber;
     const [ user ] = await usersDB.find({ username: username });
-    let status = {};
+    let status = { message: 'No orders.' };
 
-    if (user.orders.length > 0) {
+    // Kolla om user och user.orders finns
+    if (user && user.orders) {
         user.orders.forEach(order => {
             if (order.orderNumber === orderNumber) {
-                status.message = 'Ordernumber exists.'
-                // status.delivered = checkDelivery(order);
                 status.delivered = isDelivered(order);
+
+                if (!status.delivered) {
+                    const minutes = checkDelivery(order);
+                    status.message = `Will be delivered in ${minutes} min.`
+                }
+                status.message = 'Order has been delivered.';
+                
             } else {
                 status.message = 'The ordernumber does not exists.';
             }
         })
+    } else {
+        status.message = 'The username does not exists.';
     }
     
     res.json(status);
