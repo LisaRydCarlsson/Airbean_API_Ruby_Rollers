@@ -6,73 +6,15 @@ function createDB(filename, database) {
     });
 }
 
-
-// function checkUser(req, res, next) {
-//     const newUser = req.body;
-
-//     if (newUser.hasOwnProperty('username') && newUser.hasOwnProperty('password')) {
-//         next();
-//     } else {
-//         res.status(400).json({ success: false, error: 'Wrong data properties.' });
-//     }
-// }
-
-// function checkOrderData(req, res, next) {
-//     const order = req.body;
-
-//     if (order.hasOwnProperty('userID') && order.hasOwnProperty('orderNumber')) {
-//         next();
-//     } else {
-//         res.status(400).json({ success: false, error: 'Wrong data properties.' });
-//     }
-// }
-
-function checkUsername(req, res, next) {
-    const user = req.body;
-    if (user.hasOwnProperty('username')) {
-        next();
-    } else {
-        res.status(400).json({ success: false, error: 'Must have username data.' });
+function checkProperty(property) {
+    return function(req, res, next) {
+        if (req.body.hasOwnProperty(property)) {
+            next();
+        } else {
+            res.status(400).json({ success: false, error: `Must have ${property} data.` });
+        }
     }
 }
-
-function checkPassword(req, res, next) {
-    const user = req.body;
-    if (user.hasOwnProperty('password')) {
-        next();
-    } else {
-        res.status(400).json({ success: false, error: 'Must have password data.' });
-    }
-}
-
-function checkUserID(req, res, next) {
-    const user = req.body;
-    if (user.hasOwnProperty('userID')) {
-        next();
-    } else {
-        res.status(400).json({ success: false, error: 'Must have userID data.' });
-    }
-}
-
-function checkOrderNumber(req, res, next) {
-    const order = req.body;
-    if (order.hasOwnProperty('orderNumber')) {
-        next();
-    } else {
-        res.status(400).json({ success: false, error: 'Must have orderNumber data.' });
-    }
-}
-
-function checkOrder(req, res, next) {
-    const order = req.body;
-    if (order.hasOwnProperty('order')) {
-        next();
-    } else {
-        res.status(400).json({ success: false, error: 'Must have order data.' });
-    }
-}
-
-
 
 function middleware(req, res, next) {
     res.locals.totalPrice = "Hej världen!";
@@ -107,14 +49,8 @@ function plannedDelivery() {
 
 module.exports = {
     createDB,
-    // checkUser,
-    // checkOrderData,
-    checkOrderNumber,
-    checkPassword,
-    checkUserID,
-    checkUsername,
+    checkProperty,
     checkDelivery,
-    checkOrder,
     plannedDelivery,
     isDelivered,
     middleware

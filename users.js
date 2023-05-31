@@ -14,10 +14,10 @@ function createUser(newUser) {
 }
 
 async function findUsers(property, value) {
-    // const users = await usersDB.find({ property: value });
-    // return users;
     const query = {};
-    query[property] = value;
+    if (property && value) {
+        query[property] = value;
+    }
     const users = await usersDB.find(query);
     return users;
 }

@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
-const { checkUser, checkDelivery, plannedDelivery, isDelivered, checkOrderData, middleware, checkUsername, checkPassword, checkUserID, checkOrderNumber, checkOrder } = require('./utils');
+const { checkDelivery, plannedDelivery, isDelivered, middleware, checkProperty } = require('./utils');
 
 const express = require('express');
 const { getMenu } = require('./menu');
@@ -19,7 +19,7 @@ app.get('/api/beans', async (req, res) => {
 });
 
 // Borde vi använda användar id istället för username?
-app.post('/api/beans/order', checkUserID, checkOrder, middleware, (req, res) => {
+app.post('/api/beans/order', checkProperty('userID'), checkProperty('order'), middleware, (req, res) => {
     const userID = req.body.userID;
     const date = new Date().toLocaleString();
     const newOrder = {
@@ -39,9 +39,7 @@ app.post('/api/beans/order', checkUserID, checkOrder, middleware, (req, res) => 
 });
 
 // Skapa konto
-app.post('/api/user/signup', checkUsername, async (req, res) => {
-    // const username = req.body.username;
-    // const password = req.body.password;
+app.post('/api/user/signup', checkProperty('username'), checkProperty('password'), async (req, res) => {
     const newUser = {
         username: req.body.username,
         password: req.body.password,
@@ -53,6 +51,7 @@ app.post('/api/user/signup', checkUsername, async (req, res) => {
     }
 
     const users = await findUsers();
+
     users.forEach(user => {
         if (user.username === newUser.username) {
             responseObj.success = false;
@@ -61,7 +60,6 @@ app.post('/api/user/signup', checkUsername, async (req, res) => {
     });
 
     if (responseObj.success) {
-        // usersDB.insert({ username: username, password: password, orders: [] });
         createUser(newUser);
     }
 
@@ -69,14 +67,13 @@ app.post('/api/user/signup', checkUsername, async (req, res) => {
 });
 
 // Logga in
-app.post('/api/user/login', checkUsername, checkPassword, async (req, res) => {
+app.post('/api/user/login', checkProperty('username'), checkProperty('password'), async (req, res) => {
     const currentUser = req.body;
     let responseObj = {
         success: true,
         message: 'Login ok.'
     }
 
-    // const [ user ] = await usersDB.find({ username: currentUser.username });
     const [ user ] = await findUsers('username', currentUser.username);
     if (user) {
         if (currentUser.password !== user.password) {
@@ -92,9 +89,8 @@ app.post('/api/user/login', checkUsername, checkPassword, async (req, res) => {
 });
 
 // Hämta orderhistorik, här behövs en middleware som kollar userID
-app.get('/api/user/history', checkUserID, async (req, res) => {
+app.get('/api/user/history', checkProperty('userID'), async (req, res) => {
     const userID = req.body.userID;
-    // const [ user ] = await usersDB.find({ _id: userID });
     const [ user ] = await findUsers('_id', userID);
     const responseObj = {
         message: 'Previous orders',
@@ -111,10 +107,9 @@ app.get('/api/user/history', checkUserID, async (req, res) => {
 });
 
 // Hämta status för order
-app.get('/api/beans/order/status', checkUserID, checkOrderNumber, async (req, res) => {
+app.get('/api/beans/order/status', checkProperty('userID'), checkProperty('orderNumber'), async (req, res) => {
     const userID = req.body.userID;
     const orderNumber = req.body.orderNumber;
-    // const [ user ] = await usersDB.find({ _id: userID });
     const [ user ] = await findUsers('_id', userID);
     let status = { message: 'No orders.' };
 
@@ -135,7 +130,7 @@ app.get('/api/beans/order/status', checkUserID, checkOrderNumber, async (req, re
             }
         })
     } else {
-        status.message = 'The username does not exists.';
+        status.message = 'This user does not exists.';
     }
     
     res.json(status);
