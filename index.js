@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
-const { checkUser, checkDelivery, plannedDelivery, isDelivered, checkOrderStatus } = require('./utils');
+const { checkUser, checkDelivery, plannedDelivery, isDelivered, checkOrderData } = require('./utils');
 
 const express = require('express');
 const app = express();
@@ -37,7 +37,8 @@ app.post('/api/beans/order', (req, res) => {
         orderNumber: uuidv4(),
         timeOfOrder: date,
         delivery: plannedDelivery(),
-        order: req.body.order
+        order: req.body.order,
+        totalPrice: req.body.totalPrice
     }
 
     // Om gäst så kanske man bara ska ersätta ordern? Ska den tas bort sen?
@@ -106,7 +107,7 @@ app.get('/api/user/history', async (req, res) => {
 });
 
 // Hämta status för order
-app.get('/api/beans/order/status', checkOrderStatus, async (req, res) => {
+app.get('/api/beans/order/status', checkOrderData, async (req, res) => {
     const userID = req.body.userID;
     const orderNumber = req.body.orderNumber;
     const [ user ] = await usersDB.find({ _id: userID });

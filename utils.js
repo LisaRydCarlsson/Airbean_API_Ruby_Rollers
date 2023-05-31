@@ -8,7 +8,7 @@ function checkUser(req, res, next) {
     }
 }
 
-function checkOrderStatus(req, res, next) {
+function checkOrderData(req, res, next) {
     const order = req.body;
 
     if (order.hasOwnProperty('userID') && order.hasOwnProperty('orderNumber')) {
@@ -46,7 +46,7 @@ function plannedDelivery() {
 
 module.exports = {
     checkUser,
-    checkOrderStatus,
+    checkOrderData,
     checkDelivery,
     plannedDelivery,
     isDelivered
