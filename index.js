@@ -31,9 +31,7 @@ app.get('/api/beans', async (req, res) => {
 // Borde vi använda användar id istället för username?
 app.post('/api/beans/order', (req, res) => {
     const username = req.body.username;
-    // const order = req.body.order;
     const date = new Date().toLocaleString();
-    // const delivery = plannedDelivery();
     const newOrder = {
         orderNumber: username + date,
         date: date,
@@ -43,7 +41,6 @@ app.post('/api/beans/order', (req, res) => {
 
     // Om gäst så kanske man bara ska ersätta ordern? Ska den tas bort sen?
 
-    // usersDB.update({ username: username }, { $push: { orders: { order: order, date: date, orderNumber: username+date}  } });
     usersDB.update({ username: username }, { $push: { orders: newOrder } });
 
     res.json(newOrder);
