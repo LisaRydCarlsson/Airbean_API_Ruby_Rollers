@@ -8,21 +8,46 @@ function checkUser(req, res, next) {
     }
 }
 
-// Kollar om det gått 20 min
+function checkOrderStatus(req, res, next) {
+    const order = req.body;
+
+    if (order.hasOwnProperty('username') && order.hasOwnProperty('orderNumber')) {
+        next();
+    } else {
+        res.status(400).json({ success: false, error: 'Wrong data properties.' });
+    }
+}
+
+// Kollar hur lång tid det är kvar
 function checkDelivery(order) {
-    const timestamp = order.date;
+    const timestamp = order.delivery;
 
-    const milliseconds = Date.now() - Date.parse(timestamp);
-    const minutes = Math.floor(parseInt(milliseconds) / 60000);
+    const milliseconds = Date.parse(timestamp) - Date.now();
+    const minutes = Math.floor(milliseconds / 60000);
 
-    if (minutes < 20) {
+    return minutes;
+}
+
+// Kollar diff mellan leveranstid och nu
+function isDelivered(order) {
+    const diff = Date.parse(order.delivery) - Date.now();
+    if (diff > 0) {
         return false;
     } else {
         return true;
     }
 }
 
+// Skapar leveranstid
+function plannedDelivery() {
+    const delivery = new Date(Date.now() + (20 * 60 * 1000)).toLocaleString();
+    return delivery;
+}
+
 module.exports = {
     checkUser,
-    checkDelivery
+    checkOrderStatus,
+    checkDelivery,
+    plannedDelivery,
+    isDelivered
 }
