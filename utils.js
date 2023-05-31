@@ -1,21 +1,44 @@
-function checkUser(req, res, next) {
-    const newUser = req.body;
+const { findMenuItem } = require('./menu')
 
-    if (newUser.hasOwnProperty('username') && newUser.hasOwnProperty('password')) {
-        next();
-    } else {
-        res.status(400).json({ success: false, error: 'Wrong data properties.' });
+function createDB(filename, database) {
+    const file = JSON.parse(fs.readFileSync(filename));
+
+    file.items.forEach(item => {
+        database.insert(item);
+    });
+}
+
+function checkProperty(property) {
+    return function(req, res, next) {
+        if (req.body.hasOwnProperty(property)) {
+            next();
+        } else {
+            res.status(400).json({ success: false, error: `Must have ${property} data.` });
+        }
     }
 }
 
-function checkOrderStatus(req, res, next) {
-    const order = req.body;
+async function orderValidation(req, res, next) {
+    let orderItems = req.body.order;
+    let totalPrice = 0;
 
-    if (order.hasOwnProperty('userID') && order.hasOwnProperty('orderNumber')) {
-        next();
-    } else {
-        res.status(400).json({ success: false, error: 'Wrong data properties.' });
-    }
+    // Hämta alla items i db
+    orderItems = await Promise.all(orderItems.map(async item => {
+        return await findMenuItem(item.id);
+    }));        
+
+    // Summera pris om item finns, annars returnera felmeddelande
+    orderItems.forEach(item => {
+        if (item && item.price) {
+            totalPrice = totalPrice + item.price;
+        } else {
+            res.status(400).json({ success: false, error: 'One or more order item does not exist.' });
+        }
+    });
+
+    console.log(orderItems);
+    res.locals.totalPrice = totalPrice;
+    next();
 }
 
 // Kollar hur lång tid det är kvar
@@ -45,9 +68,10 @@ function plannedDelivery() {
 }
 
 module.exports = {
-    checkUser,
-    checkOrderStatus,
+    createDB,
+    checkProperty,
     checkDelivery,
     plannedDelivery,
-    isDelivered
+    isDelivered,
+    orderValidation
 }
