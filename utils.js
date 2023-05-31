@@ -11,7 +11,7 @@ function checkUser(req, res, next) {
 function checkOrderStatus(req, res, next) {
     const order = req.body;
 
-    if (order.hasOwnProperty('username') && order.hasOwnProperty('orderNumber')) {
+    if (order.hasOwnProperty('userID') && order.hasOwnProperty('orderNumber')) {
         next();
     } else {
         res.status(400).json({ success: false, error: 'Wrong data properties.' });

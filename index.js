@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
 const { checkUser, checkDelivery, plannedDelivery, isDelivered, checkOrderStatus } = require('./utils');
 
 const express = require('express');
@@ -30,18 +31,18 @@ app.get('/api/beans', async (req, res) => {
 // Skapa middleware som kollar om användaren är inloggad?
 // Borde vi använda användar id istället för username?
 app.post('/api/beans/order', (req, res) => {
-    const username = req.body.username;
+    const userID = req.body.userID;
     const date = new Date().toLocaleString();
     const newOrder = {
-        orderNumber: username + date,
-        date: date,
+        orderNumber: uuidv4(),
+        timeOfOrder: date,
         delivery: plannedDelivery(),
         order: req.body.order
     }
 
     // Om gäst så kanske man bara ska ersätta ordern? Ska den tas bort sen?
 
-    usersDB.update({ username: username }, { $push: { orders: newOrder } });
+    usersDB.update({ _id: userID }, { $push: { orders: newOrder } });
 
     res.json(newOrder);
 });
@@ -94,8 +95,8 @@ app.post('/api/user/login', checkUser, async (req, res) => {
 
 // Hämta orderhistorik
 app.get('/api/user/history', async (req, res) => {
-    const username = req.body.username;
-    const [ user ] = await usersDB.find({ username: username });
+    const userID = req.body.userID;
+    const [ user ] = await usersDB.find({ _id: userID });
     const responseObj = {
         message: 'Previous orders',
         orders: user.orders
@@ -104,11 +105,11 @@ app.get('/api/user/history', async (req, res) => {
     res.json(responseObj);
 });
 
-// Hämta status för order, skapa middleware som kollar om rätt data skickats in?
+// Hämta status för order
 app.get('/api/beans/order/status', checkOrderStatus, async (req, res) => {
-    const username = req.body.username;
+    const userID = req.body.userID;
     const orderNumber = req.body.orderNumber;
-    const [ user ] = await usersDB.find({ username: username });
+    const [ user ] = await usersDB.find({ _id: userID });
     let status = { message: 'No orders.' };
 
     // Kolla om user och user.orders finns
