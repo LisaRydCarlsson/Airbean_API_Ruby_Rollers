@@ -28,6 +28,7 @@ app.get('/api/beans', async (req, res) => {
 });
 
 // Skapa middleware som kollar om användaren är inloggad?
+// Borde vi använda användar id istället för username?
 app.post('/api/beans/order', (req, res) => {
     const username = req.body.username;
     // const order = req.body.order;
@@ -39,6 +40,8 @@ app.post('/api/beans/order', (req, res) => {
         delivery: plannedDelivery(),
         order: req.body.order
     }
+
+    // Om gäst så kanske man bara ska ersätta ordern? Ska den tas bort sen?
 
     // usersDB.update({ username: username }, { $push: { orders: { order: order, date: date, orderNumber: username+date}  } });
     usersDB.update({ username: username }, { $push: { orders: newOrder } });
@@ -116,13 +119,13 @@ app.get('/api/beans/order/status', checkOrderStatus, async (req, res) => {
         user.orders.forEach(order => {
             if (order.orderNumber === orderNumber) {
                 status.delivered = isDelivered(order);
-
-                if (!status.delivered) {
-                    const minutes = checkDelivery(order);
-                    status.message = `Will be delivered in ${minutes} min.`
-                }
                 status.message = 'Order has been delivered.';
                 
+                if (!status.delivered) {
+                    const minutes = checkDelivery(order);
+                    status.message = `Will be delivered in ${minutes} min.`;
+                }
+
             } else {
                 status.message = 'The ordernumber does not exists.';
             }
