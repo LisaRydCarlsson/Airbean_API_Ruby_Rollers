@@ -1,12 +1,4 @@
-const { findMenuItem } = require('./menu')
-
-function createDB(filename, database) {
-    const file = JSON.parse(fs.readFileSync(filename));
-
-    file.items.forEach(item => {
-        database.insert(item);
-    });
-}
+const { findMenuItem } = require('./menu/menu.js')
 
 function checkProperty(property) {
     return function(req, res, next) {
@@ -36,7 +28,6 @@ async function orderValidation(req, res, next) {
         }
     });
 
-    console.log(orderItems);
     res.locals.totalPrice = totalPrice;
     next();
 }
@@ -68,7 +59,6 @@ function plannedDelivery() {
 }
 
 module.exports = {
-    createDB,
     checkProperty,
     checkDelivery,
     plannedDelivery,

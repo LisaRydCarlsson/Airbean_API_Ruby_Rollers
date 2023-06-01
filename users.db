@@ -1,5 +1,3 @@
-{"username":"philippa","password":"philippacoolbrud","orders":[],"_id":"45RkDx6LkWLLH70z"}
-{"username":"username","password":"password123","orders":[],"_id":"8EPMhJTLdHyFpnrW"}
-{"username":"samuel","password":"password","orders":[],"_id":"Q7uMa2oeFoHvsBX3"}
-{"username":"cissi","password":"password","orders":[],"_id":"uEbi6rfeu1t7KmFX"}
-{"username":"lisa","password":"lisaärbäst","orders":[],"_id":"xbGXNZ9GBaGL1zTN"}
+{"username":"username","password":"password123","orders":[],"_id":"34T10vzNa9SYOFW9"}
+{"username":"cissi","password":"password1234","orders":[],"_id":"IB3R6HgQQiLNA0Bx"}
+{"username":"username","password":"password123","orders":[{"orderNumber":"821277c9-827e-43fe-ba05-46f99fe65585","timeOfOrder":"6/1/2023, 1:39:16 PM","delivery":"6/1/2023, 1:59:16 PM","order":[{"id":"coffee-m2h37k2mnh"},{"id":"coffee-220dodpzmg"}],"totalPrice":98}],"_id":"34T10vzNa9SYOFW9"}

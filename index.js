@@ -1,9 +1,9 @@
 const { v4: uuidv4 } = require('uuid');
-const { checkDelivery, plannedDelivery, isDelivered, orderValidation, checkProperty } = require('./utils');
+const { checkDelivery, plannedDelivery, isDelivered, orderValidation, checkProperty } = require('./utils.js');
 
 const express = require('express');
-const { getMenu } = require('./menu');
-const { updateUserOrder, findUsers, createUser } = require('./users');
+const { getMenu } = require('./menu/menu.js');
+const { updateUserOrder, findUsers, createUser } = require('./users/users.js');
 const app = express();
 const PORT = 1337;
 
@@ -19,7 +19,7 @@ app.get('/api/beans', async (req, res) => {
 });
 
 // Skicka order
-app.post('/api/beans/order', checkProperty('userID'), checkProperty('order'), orderValidation, (req, res) => {
+app.post('/api/beans/order', checkProperty('userID'), checkProperty('order'), orderValidation, async (req, res) => {
     const userID = req.body.userID;
     const date = new Date().toLocaleString();
     const newOrder = {
@@ -30,12 +30,19 @@ app.post('/api/beans/order', checkProperty('userID'), checkProperty('order'), or
         totalPrice: res.locals.totalPrice
     }
 
-    if (req.body.order.length > 0) {
-        updateUserOrder(userID, newOrder);
-        res.json(newOrder);
+    const [ user ] = await findUsers('_id', userID);
+
+    if (user) {
+        if (req.body.order.length > 0) {
+            updateUserOrder(userID, newOrder);
+            res.json(newOrder);
+        } else {
+            res.status(400).json({ message: 'Cannot place an empty order.'})
+        }
     } else {
-        res.status(400).json({ message: 'Cannot place an empty order.'})
+        res.status(404).json({ message: 'User not found.'});
     }
+
 });
 
 // Skapa konto
