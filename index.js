@@ -9,6 +9,7 @@ const PORT = 1337;
 
 app.use(express.json());
 
+// Hämta meny
 app.get('/api/beans', async (req, res) => {
     try {
         const menu = await getMenu();
@@ -95,7 +96,7 @@ app.post('/api/user/login', checkProperty('username'), checkProperty('password')
     res.json(responseObj);
 });
 
-// Hämta orderhistorik, här behövs en orderValidation som kollar userID
+// Hämta orderhistorik
 app.get('/api/user/history', checkProperty('userID'), async (req, res) => {
     const userID = req.body.userID;
     const [ user ] = await findUsers('_id', userID);
