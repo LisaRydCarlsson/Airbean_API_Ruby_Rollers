@@ -35,17 +35,17 @@ I detta grupparbete ska vi skapa ett API för en webbapp där det går att best�
 ` POST /api/beans/order `
 
 Exempel på request body:
-`	{
-		"userID": "34T10vzNa9SYOFW9",
-		"order": [
-			{
-				"id": "coffee-m2h37k2mnh"
-			},
-			{
-				"id": "coffee-220dodpzmg"
-			}
-		]
-	}`
+`{
+	"userID": "34T10vzNa9SYOFW9",
+	"order": [
+		{
+			"id": "coffee-m2h37k2mnh"
+		},
+		{
+			"id": "coffee-220dodpzmg"
+		}
+	]
+}`
 
 ### Skapa konto
 ` POST /api/user/signup `
