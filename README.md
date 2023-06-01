@@ -25,3 +25,60 @@ I detta grupparbete ska vi skapa ett API för en webbapp där det går att best�
 - samCcode
 - Lodenius
 - LisaRydCarlsson
+
+# Methods
+
+### Hämta menyn
+` GET /api/beans `
+
+### Lägg order
+` POST /api/beans/order `
+
+Exempel på request body:
+`	{
+		"userID": "34T10vzNa9SYOFW9",
+		"order": [
+			{
+				"id": "coffee-m2h37k2mnh"
+			},
+			{
+				"id": "coffee-220dodpzmg"
+			}
+		]
+	}`
+
+### Skapa konto
+` POST /api/user/signup `
+
+Exempel på request body:
+`{
+	"username": "username",
+	"password": "password1234"
+}`
+
+### Logga in
+` GET /api/user/login `
+
+Exempel på request body:
+`{
+	"username": "username",
+	"password": "password1234"
+}`
+
+### Hämta orderhistorik
+` GET /api/user/history `
+
+Exempel på request body:
+`{
+	"userID": "11223344"
+}`
+
+### Hämta orderstatus
+` GET /api/beans/order/status `
+
+Exempel på request body:
+`{
+	"userID": "11223344",
+	"orderNumber": "55667788"
+}`
+
