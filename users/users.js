@@ -1,11 +1,10 @@
-const fs = require('fs');
 const nedb = require('nedb-promise');
 const usersDB = new nedb({ filename: 'users.db', autoload: true });
 const { createDB } = require('../createDB.js');
 
 // createDB('/users/users.json', usersDB);
 
-function updateUserOrder(userID, newOrder) {
+function updateUserOrders(userID, newOrder) {
     usersDB.update({ _id: userID }, { $push: { orders: newOrder } });
 }
 
@@ -23,7 +22,7 @@ async function findUsers(property, value) {
 }
 
 module.exports = {
-    updateUserOrder,
+    updateUserOrders,
     createUser,
     findUsers
 }
