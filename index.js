@@ -1,6 +1,3 @@
-const { join } = require('path');
-const fs = require('fs');
-
 const express = require('express');
 
 const beansRoutes = require('./routes/beansRoutes.js');
