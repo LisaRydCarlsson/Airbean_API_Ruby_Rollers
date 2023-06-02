@@ -5,7 +5,7 @@ function checkProperty(property) {
         if (req.body.hasOwnProperty(property)) {
             next();
         } else {
-            res.status(400).json({ success: false, error: `Must have ${property} data.` });
+            return res.status(400).json({ success: false, error: `Must have ${property} data.` });
         }
     }
 }
@@ -20,13 +20,13 @@ async function orderValidation(req, res, next) {
     }));        
 
     // Summera pris om item finns, annars returnera felmeddelande
-    orderItems.forEach(item => {
+    for (const item of orderItems) {
         if (item && item.price) {
             totalPrice = totalPrice + item.price;
         } else {
-            res.status(400).json({ success: false, error: 'One or more order item does not exist.' });
+            return res.status(400).json({ success: false, error: 'One or more order item does not exist.' });
         }
-    });
+    }
 
     res.locals.totalPrice = totalPrice;
     next();
